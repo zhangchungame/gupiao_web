@@ -8,38 +8,62 @@
 
 </head>
 <body>
-
-<div id="main" style="width: 600px;height:400px;"></div>
+<div id="main" style="width: 1200px;height:800px;"></div>
 <script type="text/javascript">
 
     var myChart = echarts.init(document.getElementById('main'));
     myChart.showLoading();
-    $.get('http://localhost:8080/rimingxi/getday?code=000007', function (data) {
+    $.get('http://localhost:8080/rimingxi/getday?code={{.code}}&startDate={{.startDate}}&endDate={{.endDate}}', function (data) {
         myChart.hideLoading();
+        data=data.Data;
+
         var option = {
             title: {
                 text: 'ECharts 入门示例'
             },
-            tooltip: {},
-            legend: {
-                data:['销量']
+            tooltip: {
+                trigger: 'axis',
+                formatter:function (params,ticket) {
+                    return "时间："+params[0].data.name+"</br>成交价"+params[0].data.value+"</br>成交手"+params[0].data.chengjiaoshou;
+                }
             },
+//            legend: {
+//                data:['销量']
+//            },
             xAxis: {
-
+                type:'category',
+                data:data.map(function (item) {
+//                    var date=new Date(item.Date_int);
+//                    var x=[date.getHours(),date.getMinutes(),date.getSeconds()].join(":");
+                    return item.Time;
+                })
             },
-            yAxis: {},
+            yAxis: {
+                type:'value',
+                min: Math.min.apply(null, data.map(function (item) {
+                    return item.Chengjiaojia;
+                }))*0.99,
+                max: Math.max.apply(null, data.map(function (item) {
+                    return item.Chengjiaojia;
+                }))*1.01,
+                splitLine: {
+                    show: false
+                }
+            },
             series: [{
                 name: '销量',
                 type: 'line',
-                data: [
-                    [5,3],
-                    [33,22],
-                    [65,32],
-                    [43,12]
-                    ]
+                data: data.map(function (item) {
+//                    var date=new Date(item.Date_int);
+//                    var x=[date.getHours(),date.getMinutes(),date.getSeconds()].join(":");
+                    return {name:item.Time,value:item.Chengjiaojia,chengjiaoshou:item.Chengjiaoshou};
+//                    return item.Chengjiaojia;
+//                    return [item.Date_int,item.Chengjiaojia];
+                }),
+                showSymbol:false
             }]
         };
-
+        console.log(option);
         // 使用刚指定的配置项和数据显示图表。
         myChart.setOption(option);
 

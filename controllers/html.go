@@ -9,7 +9,8 @@ type HtmlController struct {
 }
 
 func (this *HtmlController)Rikxian()  {
-	this.Data["content"] = "value"
-	this.Data["content2"] = "aaa"
+	this.Data["startDate"]=this.GetString("startDate","20161205")
+	this.Data["endDate"]=this.GetString("endDate","20161205")
+	this.Data["code"]=this.GetString("code","000007")
 	this.TplName = "html/rikxian.html"
 }
